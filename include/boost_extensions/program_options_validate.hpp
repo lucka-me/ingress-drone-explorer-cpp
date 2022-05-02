@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/any.hpp>
+#include <vector>
 
 #include "type/LngLat.hpp"
 

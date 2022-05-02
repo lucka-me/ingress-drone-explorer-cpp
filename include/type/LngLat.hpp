@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cmath>
+#include <numbers>
 
 namespace ingress_drone_explorer {
 
@@ -15,11 +15,11 @@ struct LngLat {
     }
 
     inline double theta() const {
-        return m_lng * M_PI / 180.0;
+        return m_lng * std::numbers::pi / 180.0;
     }
 
     inline double phi() const {
-        return m_lat * M_PI / 180.0;
+        return m_lat * std::numbers::pi / 180.0;
     }
 
     double distanceTo(const LngLat& other) const;

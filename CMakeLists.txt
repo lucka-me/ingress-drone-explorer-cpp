@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.23)
 
 project(ingress-drone-explorer)
 
-set(CMAKE_CXX_STANDARD 20)
-
 set(Boost_USE_STATIC_LIBS ON)
 find_package(Boost REQUIRED
     COMPONENTS
@@ -11,11 +9,15 @@ find_package(Boost REQUIRED
     program_options
 )
 
+if(UNIX)
+    option(PREFER_LINK_STATIC "Prefer to link static libraries (especially stdc++) or not" FALSE)
+endif()
+
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 
 include_directories(
     ${Boost_INCLUDE_DIR}
-
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
@@ -27,3 +29,11 @@ target_link_libraries(${PROJECT_NAME}
     Boost::json
     Boost::program_options
 )
+
+if(PREFER_LINK_STATIC)
+    target_link_libraries(${PROJECT_NAME}
+        stdc++ -static
+    )
+endif()
+
+install(TARGETS ${PROJECT_NAME})

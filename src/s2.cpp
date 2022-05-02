@@ -1,6 +1,7 @@
 #include "s2.hpp"
 
 #include <algorithm>
+#include <cmath>
 
 namespace ingress_drone_explorer {
 
@@ -144,8 +145,8 @@ inline ECEFCoordinate::ECEFCoordinate(const uint8_t face, const double s, const 
 inline LngLat ECEFCoordinate::lngLat() const {
     return std::move(
         LngLat(
-            std::atan2(m_y, m_x) / M_PI * 180.0,
-            std::atan2(m_z, std::sqrt(m_x * m_x + m_y * m_y)) / M_PI * 180.0
+            std::atan2(m_y, m_x) / std::numbers::pi * 180.0,
+            std::atan2(m_z, std::sqrt(m_x * m_x + m_y * m_y)) / std::numbers::pi * 180.0
         )
     );
 }

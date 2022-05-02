@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <vector>
 
 #include "type/Portal.hpp"
 #include "s2.hpp"

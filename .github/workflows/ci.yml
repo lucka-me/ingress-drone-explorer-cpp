@@ -1,0 +1,134 @@
+name: CI
+
+on:
+  push:
+    branches: [ 'main' ]
+  pull_request:
+    branches: [ 'main' ]
+
+env:
+  BUILD_TYPE: Release
+  BINARY_NAME: ingress-drone-explorer
+
+jobs:
+  build-macos:
+    name: Build for macOS
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Get Boost Information
+        run: |
+          brew info boost > boost-info.txt
+          sed -i '' -e '1q' boost-info.txt
+      - name: Setup Cache for Boost
+        id: cache-boost
+        uses: actions/cache@v3
+        with:
+          key: ${{ runner.os }}-boost-${{ hashFiles('./boost-info.txt') }}
+          path: |
+            ~/Library/Caches/Homebrew/downloads/*--boost--*
+            /usr/local/Cellar/boost
+          restore-keys: |
+            ${{ runner.os }}-boost-
+      - name: Link Boost
+        if: steps.cache-boost.outputs.cache-hit == 'true'
+        run: |
+          brew link boost
+      - name: Install Boost
+        if: steps.cache-boost.outputs.cache-hit != 'true'
+        run: |
+          brew install boost
+          brew cleanup
+      - name: Configure CMake
+        run: cmake -B build --install-prefix ${{ github.workspace }}/output -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+      - name: Build
+        run: cmake --build build --config ${{ env.BUILD_TYPE }} -j `sysctl -n hw.ncpu`
+      - name: Install
+        run: cmake --install build
+      - name: Upload Binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.BINARY_NAME }}-macos-x86_64
+          path: output/bin/${{ env.BINARY_NAME }}
+
+  build-windows:
+    name: Build for Windows
+    runs-on: windows-latest
+    env:
+      BOOST_ROOT: C:\hostedtoolcache\windows\Boost\1.79.0\x86_64
+      BOOST_URL: https://sourceforge.net/projects/boost/files/boost-binaries/1.79.0/boost_1_79_0-msvc-14.3-64.exe
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Cache for Boost
+        uses: actions/cache@v2
+        id: cache-boost
+        with:
+          path: ${{ env.BOOST_ROOT }}
+          key: ${{ runner.os }}-boost-1.79.0
+      - name: Install Boost
+        if: steps.cache-boost.outputs.cache-hit != 'true'
+        run: |
+          $Url = "${{ env.BOOST_URL }}"
+          (New-Object System.Net.WebClient).DownloadFile($Url, "$env:TEMP\boost.exe")
+          Start-Process `
+            -Wait `
+            -FilePath "$env:TEMP\boost.exe" "/SILENT","/SP-","/SUPPRESSMSGBOXES","/DIR=${{ env.BOOST_ROOT }}"
+      - name: Configure CMake
+        run: cmake -B build --install-prefix ${{ github.workspace }}\output -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+      - name: Build
+        run: cmake --build build --config ${{ env.BUILD_TYPE }}
+      - name: Install
+        run: cmake --install build
+      - name: Upload Binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.BINARY_NAME }}-windows-x86_64
+          path: output\bin\${{ env.BINARY_NAME }}.exe
+
+  build-linux:
+    name: Build for Linux
+    runs-on: ubuntu-latest
+    env:
+      BOOST_SOURCE: ${{ github.workspace }}/boost/1.79.0/source
+      BOOST_ROOT: ${{ github.workspace }}/boost/1.79.0/install
+      BOOST_URL: https://boostorg.jfrog.io/artifactory/main/release/1.79.0/source/boost_1_79_0.7z
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Cache for Boost
+        uses: actions/cache@v2
+        id: cache-boost
+        with:
+          path: ${{ env.BOOST_ROOT }}
+          key: ${{ runner.os }}-boost-1.79.0
+      - name: Setup Compiler
+        run: |
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 20
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 20
+          sudo update-alternatives --set gcc /usr/bin/gcc-10
+          sudo update-alternatives --set g++ /usr/bin/g++-10
+      - name: Build Boost
+        if: steps.cache-boost.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ${{ env.BOOST_SOURCE }}
+          curl -s -L -o ${{ env.BOOST_SOURCE }}/source.7z ${{ env.BOOST_URL }}
+          7z x -y ${{ env.BOOST_SOURCE }}/source.7z -o${{ env.BOOST_SOURCE }}
+          cd ${{ env.BOOST_SOURCE }}/boost_1_79_0
+          ./bootstrap.sh --prefix=${{ env.BOOST_ROOT }} --with-libraries=json,program_options
+          ./b2 install
+      - name: Configure CMake
+        run: >
+          cmake -B build --install-prefix ${{ github.workspace }}/output
+          -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+          -DPREFER_LINK_STATIC=TRUE
+      - name: Build
+        run: cmake --build build --config ${{ env.BUILD_TYPE }} -j `nproc`
+      - name: Install
+        run: cmake --install build
+      - name: Upload Binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.BINARY_NAME }}-linux-x86_64
+          path: output/bin/${{ env.BINARY_NAME }}

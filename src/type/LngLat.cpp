@@ -1,5 +1,7 @@
 #include "type/LngLat.hpp"
 
+#include <cmath>
+
 namespace ingress_drone_explorer {
 
 double LngLat::distanceTo(const LngLat& other) const {

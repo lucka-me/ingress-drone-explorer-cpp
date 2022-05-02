@@ -4,7 +4,6 @@
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
-#include <vector>
 
 #include <boost/json.hpp>
 
@@ -32,7 +31,7 @@ void Task::loadPortalLists(const std::vector<std::string>& filenames) {
         if (std::string::npos != parent.string().find('*')) {
             throw std::runtime_error("Invalid wildcard.");
         }
-        const auto pattern = url.filename();
+        const auto pattern = url.filename().string();
         std::filesystem::directory_iterator iterator(parent);
         for (const auto& entry : iterator) {
             const auto realPath = entry.path();
@@ -141,11 +140,10 @@ void Task::exploreFrom(const LngLat& start) {
     m_start = start;
     const auto startCell = s2::Cell(start);
     const auto startTime = std::chrono::steady_clock::now();
-    std::cout << "⏳ Exploring..." << std::endl;
-    // std::cout
-    //     << "⏳ Explore from " << start
-    //     << " in cell #" << startCell
-    //     << std::endl;
+    std::cout
+        << "⏳ Explore from " << start
+        << " in cell #" << startCell
+        << std::endl;
     CellSet queue;
 
     if (m_cells.contains(startCell)) {

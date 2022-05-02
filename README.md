@@ -1,11 +1,15 @@
 # Ingress Drone Explorer - C++
 
+[![CI Status](https://img.shields.io/github/workflow/status/lucka-me/ingress-drone-explorer-cpp/CI?label=CI&logo=github-actions&logoColor=white)](https://github.com/lucka-me/ingress-drone-explorer-cpp/actions/workflows/ci.yml "CI Workflow")
+
 An offline CLI tool to analyze reachable Portals for Ingress Drone Mark I.
 
 A Swift implementation is also [available](https://github.com/lucka-me/ingress-drone-explorer-swift).
 The C++ implementation is faster but the code is much more complex.
 
-### Requirements
+The CI workflow builds binaries for macOS, Windows and Linux in x86_64, the files are available as artifacts.
+
+## Requirements
 
 - CMake
 - Boost
@@ -15,10 +19,11 @@ The C++ implementation is faster but the code is much more complex.
 
 ## Build
 
-Install the latest Swift, clone the repository and simply:
+Clone the repository and simply:
 
 ```sh
-$ cmake --build ./build --target all
+$ cmake -B build
+$ cmake --build build
 ```
 
 ## Usage

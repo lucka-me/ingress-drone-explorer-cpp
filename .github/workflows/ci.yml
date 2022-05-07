@@ -10,8 +10,8 @@ env:
   BUILD_TYPE: Release
   BINARY_NAME: ingress-drone-explorer
   BOOST_VERSION: 1.79.0
-  BOOST_SOURCE: ${{ github.workspace }}/boost/1.79.0/source
-  BOOST_ROOT: ${{ github.workspace }}/boost/1.79.0/install
+  BOOST_SOURCE: ${{ github.workspace }}/boost/source
+  BOOST_ROOT: ${{ github.workspace }}/boost/install
   BOOST_URL: https://boostorg.jfrog.io/artifactory/main/release/1.79.0/source/boost_1_79_0.7z
 
 jobs:
@@ -55,8 +55,8 @@ jobs:
     name: Build for Windows
     runs-on: windows-latest
     env:
-      BOOST_ROOT: C:\hostedtoolcache\windows\Boost\1.79.0\x86_64
-      BOOST_URL: https://sourceforge.net/projects/boost/files/boost-binaries/1.79.0/boost_1_79_0-msvc-14.3-64.exe
+      BOOST_SOURCE: ${{ github.workspace }}\boost\source
+      BOOST_ROOT: ${{ github.workspace }}\boost\install
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -65,15 +65,16 @@ jobs:
         id: cache-boost
         with:
           path: ${{ env.BOOST_ROOT }}
-          key: ${{ runner.os }}-boost-1.79.0
-      - name: Install Boost
+          key: ${{ runner.os }}-boost-${{ env.BOOST_VERSION }}-v2
+      - name: Build Boost
         if: steps.cache-boost.outputs.cache-hit != 'true'
         run: |
-          $Url = "${{ env.BOOST_URL }}"
-          (New-Object System.Net.WebClient).DownloadFile($Url, "$env:TEMP\boost.exe")
-          Start-Process `
-            -Wait `
-            -FilePath "$env:TEMP\boost.exe" "/SILENT","/SP-","/SUPPRESSMSGBOXES","/DIR=${{ env.BOOST_ROOT }}"
+          New-Item -Path "${{ env.BOOST_SOURCE }}" -ItemType "directory"
+          (New-Object System.Net.WebClient).DownloadFile("${{ env.BOOST_URL }}", "${{ env.BOOST_SOURCE }}\boost.7z")
+          7z.exe x "${{ env.BOOST_SOURCE }}\boost.7z" -o"${{ env.BOOST_SOURCE }}" -y | Out-Null
+          Push-Location -Path "${{ env.BOOST_SOURCE }}\boost_1_79_0"
+          .\bootstrap.bat
+          .\b2 install --prefix=${{ env.BOOST_ROOT }} --with-json --with-program_options link=static cxxstd=20 toolset=msvc
       - name: Configure CMake
         run: cmake -B build --install-prefix ${{ github.workspace }}\output -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
       - name: Build

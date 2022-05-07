@@ -9,6 +9,10 @@ on:
 env:
   BUILD_TYPE: Release
   BINARY_NAME: ingress-drone-explorer
+  BOOST_VERSION: 1.79.0
+  BOOST_SOURCE: ${{ github.workspace }}/boost/1.79.0/source
+  BOOST_ROOT: ${{ github.workspace }}/boost/1.79.0/install
+  BOOST_URL: https://boostorg.jfrog.io/artifactory/main/release/1.79.0/source/boost_1_79_0.7z
 
 jobs:
   build-macos:
@@ -17,31 +21,26 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Get Boost Information
-        run: |
-          brew info boost > boost-info.txt
-          sed -i '' -e '1q' boost-info.txt
       - name: Setup Cache for Boost
         id: cache-boost
         uses: actions/cache@v3
         with:
-          key: ${{ runner.os }}-boost-${{ hashFiles('./boost-info.txt') }}
-          path: |
-            ~/Library/Caches/Homebrew/downloads/*--boost--*
-            /usr/local/Cellar/boost
-          restore-keys: |
-            ${{ runner.os }}-boost-
-      - name: Link Boost
-        if: steps.cache-boost.outputs.cache-hit == 'true'
-        run: |
-          brew link boost
-      - name: Install Boost
+          key: ${{ runner.os }}-boost-${{ env.BOOST_VERSION }}
+          path: ${{ env.BOOST_ROOT }}
+      - name: Build Boost
         if: steps.cache-boost.outputs.cache-hit != 'true'
         run: |
-          brew install boost
-          brew cleanup
+          mkdir -p ${{ env.BOOST_SOURCE }}
+          curl -s -L -o ${{ env.BOOST_SOURCE }}/source.7z ${{ env.BOOST_URL }}
+          7z x -y ${{ env.BOOST_SOURCE }}/source.7z -o${{ env.BOOST_SOURCE }}
+          cd ${{ env.BOOST_SOURCE }}/boost_1_79_0
+          ./bootstrap.sh --prefix=${{ env.BOOST_ROOT }} --with-libraries=json,program_options
+          ./b2 install link=static cxxstd=20 cxxflags="-arch x86_64 -arch arm64"
       - name: Configure CMake
-        run: cmake -B build --install-prefix ${{ github.workspace }}/output -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+        run: >
+          cmake -B build --install-prefix ${{ github.workspace }}/output
+          -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+          -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
       - name: Build
         run: cmake --build build --config ${{ env.BUILD_TYPE }} -j `sysctl -n hw.ncpu`
       - name: Install
@@ -49,7 +48,7 @@ jobs:
       - name: Upload Binary
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.BINARY_NAME }}-macos-x86_64
+          name: ${{ env.BINARY_NAME }}-${{ runner.os }}-universal
           path: output/bin/${{ env.BINARY_NAME }}
 
   build-windows:
@@ -84,16 +83,12 @@ jobs:
       - name: Upload Binary
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.BINARY_NAME }}-windows-x86_64
+          name: ${{ env.BINARY_NAME }}-${{ runner.os }}-x86_64
           path: output\bin\${{ env.BINARY_NAME }}.exe
 
   build-linux:
     name: Build for Linux
     runs-on: ubuntu-latest
-    env:
-      BOOST_SOURCE: ${{ github.workspace }}/boost/1.79.0/source
-      BOOST_ROOT: ${{ github.workspace }}/boost/1.79.0/install
-      BOOST_URL: https://boostorg.jfrog.io/artifactory/main/release/1.79.0/source/boost_1_79_0.7z
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -101,8 +96,8 @@ jobs:
         uses: actions/cache@v2
         id: cache-boost
         with:
+          key: ${{ runner.os }}-boost-${{ env.BOOST_VERSION }}
           path: ${{ env.BOOST_ROOT }}
-          key: ${{ runner.os }}-boost-1.79.0
       - name: Setup Compiler
         run: |
           sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 20
@@ -117,7 +112,7 @@ jobs:
           7z x -y ${{ env.BOOST_SOURCE }}/source.7z -o${{ env.BOOST_SOURCE }}
           cd ${{ env.BOOST_SOURCE }}/boost_1_79_0
           ./bootstrap.sh --prefix=${{ env.BOOST_ROOT }} --with-libraries=json,program_options
-          ./b2 install
+          ./b2 install link=static cxxstd=20
       - name: Configure CMake
         run: >
           cmake -B build --install-prefix ${{ github.workspace }}/output
@@ -130,5 +125,5 @@ jobs:
       - name: Upload Binary
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.BINARY_NAME }}-linux-x86_64
+          name: ${{ env.BINARY_NAME }}-${{ runner.os }}-x86_64
           path: output/bin/${{ env.BINARY_NAME }}

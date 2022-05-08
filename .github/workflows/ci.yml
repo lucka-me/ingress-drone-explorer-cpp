@@ -65,7 +65,7 @@ jobs:
         id: cache-boost
         with:
           path: ${{ env.BOOST_ROOT }}
-          key: ${{ runner.os }}-boost-${{ env.BOOST_VERSION }}-v2
+          key: ${{ runner.os }}-boost-${{ env.BOOST_VERSION }}-v3
       - name: Build Boost
         if: steps.cache-boost.outputs.cache-hit != 'true'
         run: |
@@ -74,9 +74,15 @@ jobs:
           7z.exe x "${{ env.BOOST_SOURCE }}\boost.7z" -o"${{ env.BOOST_SOURCE }}" -y | Out-Null
           Push-Location -Path "${{ env.BOOST_SOURCE }}\boost_1_79_0"
           .\bootstrap.bat
-          .\b2 install --prefix=${{ env.BOOST_ROOT }} --with-json --with-program_options link=static cxxstd=20 toolset=msvc
+          .\b2 install --prefix=${{ env.BOOST_ROOT }} `
+          --with-json --with-program_options `
+          link=static runtime-link=static address-model=64 `
+          cxxstd=20 toolset=msvc
       - name: Configure CMake
-        run: cmake -B build --install-prefix ${{ github.workspace }}\output -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+        run: >
+          cmake -B build --install-prefix ${{ github.workspace }}\output
+          -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+          -DUSE_STATIC_LIBS=ON
       - name: Build
         run: cmake --build build --config ${{ env.BUILD_TYPE }}
       - name: Install
@@ -118,7 +124,7 @@ jobs:
         run: >
           cmake -B build --install-prefix ${{ github.workspace }}/output
           -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
-          -DPREFER_LINK_STATIC=TRUE
+          -DUSE_STATIC_LIBS=ON
       - name: Build
         run: cmake --build build --config ${{ env.BUILD_TYPE }} -j `nproc`
       - name: Install

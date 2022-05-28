@@ -31,7 +31,7 @@ bool match(const std::string& text, const std::string& pattern) {
     while (posT < text.size()) {
         if (pattern[posP] == '*') {
             ++posP;
-            // Latest *
+            // End with *
             if (pattern.size() == posP) {
                 break;
             }
@@ -47,8 +47,11 @@ bool match(const std::string& text, const std::string& pattern) {
             posT = startT;
         } else {
             // Can not retry
-            break;
+            return false;
         }
+    }
+    while (posP < pattern.size() && pattern[posP] == '*') {
+        ++posP;
     }
     return pattern.size() == posP;
 }

@@ -245,18 +245,18 @@ void Task::report() const {
         << std::setw(totalNumberDigits) << m_cells.size()
         << "   cell(s), "
         << std::setw(reachableNumberDigits) << m_reachableCells.size()
-        << " are 🟢 reachable, "
+        << " are ✅ reachable, "
         << std::setw(unreachableNumberDigits) << m_cells.size() - m_reachableCells.size()
-        << " are 🔴 not."
+        << " are ⛔️ not."
         << std::endl;
     std::cout
         << "📍 In "
         << std::setw(totalNumberDigits) << portalsCount
         << " Portal(s), "
         << std::setw(reachableNumberDigits) << reachablePortalsCount
-        << " are 🟢 reachable, "
+        << " are ✅ reachable, "
         << std::setw(unreachableNumberDigits) << portalsCount - reachablePortalsCount
-        << " are 🔴 not."
+        << " are ⛔️ not."
         << std::endl;
     std::cout
         << "🛬 The furthest Portal is "

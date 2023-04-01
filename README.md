@@ -1,6 +1,6 @@
 # Ingress Drone Explorer - C++
 
-[![CI Status](https://img.shields.io/github/workflow/status/lucka-me/ingress-drone-explorer-cpp/CI?label=CI&logo=github-actions&logoColor=white)](https://github.com/lucka-me/ingress-drone-explorer-cpp/actions/workflows/ci.yml "CI Workflow")
+[![CI](https://github.com/lucka-me/ingress-drone-explorer-cpp/actions/workflows/ci.yml/badge.svg)](https://github.com/lucka-me/ingress-drone-explorer-cpp/actions/workflows/ci.yml "CI Workflow")
 
 An offline CLI tool to analyze reachable Portals for Ingress Drone Mark I.
 

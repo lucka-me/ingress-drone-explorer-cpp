@@ -65,7 +65,7 @@ jobs:
         id: cache-boost
         with:
           path: ${{ env.BOOST_ROOT }}
-          key: ${{ runner.os }}-boost-${{ env.BOOST_VERSION }}-v3
+          key: ${{ runner.os }}-boost-${{ env.BOOST_VERSION }}
       - name: Build Boost
         if: steps.cache-boost.outputs.cache-hit != 'true'
         run: |

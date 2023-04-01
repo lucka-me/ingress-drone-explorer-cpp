@@ -285,7 +285,7 @@ void Task::saveDrawnItemsTo(const std::string& filename) const {
             const auto shape = entry.first.shape();
             return std::move(
                 DrawnItem(
-                    m_reachableCells.contains(entry.first) ? "#00ff00" : "ff0000",
+                    m_reachableCells.contains(entry.first) ? "#783cbd" : "#404040",
                     std::move(std::vector<LngLat>(shape.begin(), shape.end()))
                 )
             );

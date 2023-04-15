@@ -7,8 +7,8 @@
 
 #include <boost/json.hpp>
 
-#include "boost_extensions/json_tag_invoke.hpp"
-#include "std_extensions/iostream.hpp"
+#include "extensions/iostream_extensions.hpp"
+#include "extensions/tag_invoke.hpp"
 #include "type/drawn_item_t.hpp"
 #include "utils.hpp"
 

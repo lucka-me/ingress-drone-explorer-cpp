@@ -1,13 +1,11 @@
 #pragma once
 
 #include <array>
-#include <compare>
-#include <cstdint>
 #include <set>
 
-#include "type/coordinate_t.hpp"
-
 namespace ingress_drone_explorer {
+
+struct coordinate_t;
 
 namespace s2 {
 

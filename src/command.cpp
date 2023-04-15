@@ -4,7 +4,7 @@
 
 #include <boost/program_options.hpp>
 
-#include "std_extensions/iostream.hpp"
+#include "extensions/iostream_extensions.hpp"
 #include "type/coordinate_t.hpp"
 #include "task_t.hpp"
 

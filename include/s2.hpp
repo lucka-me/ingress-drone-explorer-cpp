@@ -5,55 +5,55 @@
 #include <cstdint>
 #include <set>
 
-#include "type/LngLat.hpp"
+#include "type/coordinate_t.hpp"
 
 namespace ingress_drone_explorer {
 
 namespace s2 {
 
-struct Cell {
-    uint8_t m_face;
-    uint8_t m_level;
-    int32_t m_i;
-    int32_t m_j;
+struct cell_t {
+    uint8_t _face;
+    uint8_t _level;
+    int32_t _i;
+    int32_t _j;
 
-    Cell(const LngLat& lngLat, const uint8_t level = 16);
+    cell_t(const coordinate_t& lngLat, const uint8_t level = 16);
 
 public:
-    inline auto operator<=>(const Cell& other) const = default;
+    inline auto operator<=>(const cell_t& other) const = default;
     
-    std::set<Cell> queryNeighbouredCellsCoveringCapOf(const LngLat& center, const double radius) const;
-    std::array<LngLat, 4> shape() const;
+    std::set<cell_t> neighboured_cells_covering_cap_of(const coordinate_t& center, const double radius) const;
+    std::array<coordinate_t, 4> shape() const;
 
 private:
-    inline Cell(const uint8_t face, const double i, const double j, uint8_t level = 16);
+    inline cell_t(const uint8_t face, const double i, const double j, uint8_t level = 16);
 
-    inline bool intersectsWithCapOf(const LngLat& center, const double radius) const;
-    inline LngLat lngLat(const double dI, const double dJ) const;
-    inline std::set<Cell> neighbours() const;
+    inline bool intersects_with_cap_of(const coordinate_t& center, const double radius) const;
+    inline coordinate_t coordinate(const double d_i, const double d_j) const;
+    inline std::set<cell_t> neighbours() const;
 };
 
 template<typename T>
-static inline auto operator<(const Cell& a, const std::pair<const Cell, T>& b) {
+static inline auto operator<(const cell_t& a, const std::pair<const cell_t, T>& b) {
     return a < b.first;
 }
 
 template<typename T>
-static inline auto operator<(const std::pair<const Cell, T>& a, const Cell& b) {
+static inline auto operator<(const std::pair<const cell_t, T>& a, const cell_t& b) {
     return a.first < b;
 }
 
-struct ECEFCoordinate
+struct ecef_coordinate_t
 {
-    double m_x;
-    double m_y;
-    double m_z;
+    double _x;
+    double _y;
+    double _z;
 
-    inline ECEFCoordinate(const LngLat& lngLat);
-    inline ECEFCoordinate(const uint8_t face, const double s, const double t);
+    inline ecef_coordinate_t(const coordinate_t& lngLat);
+    inline ecef_coordinate_t(const uint8_t face, const double s, const double t);
 
-    inline LngLat lngLat() const;
-    inline void faceST(uint8_t& face, double& s, double& t) const;
+    inline coordinate_t coordinate() const;
+    inline void face_s_t(uint8_t& face, double& s, double& t) const;
 };
 
 } // namespace s2

@@ -7,27 +7,27 @@ namespace ingress_drone_explorer {
 
 namespace s2 {
 
-Cell::Cell(const LngLat& lngLat, const uint8_t level) {
-    m_level = level;
+cell_t::cell_t(const coordinate_t& lngLat, const uint8_t level) {
+    _level = level;
     double s, t;
-    ECEFCoordinate(lngLat).faceST(m_face, s, t);
+    ecef_coordinate_t(lngLat).face_s_t(_face, s, t);
     const int32_t max = 1 << level;
-    m_i = std::clamp(static_cast<decltype(m_i)>(std::floor(s * max)), 0, max - 1);
-    m_j = std::clamp(static_cast<decltype(m_j)>(std::floor(t * max)), 0, max - 1);
+    _i = std::clamp(static_cast<decltype(_i)>(std::floor(s * max)), 0, max - 1);
+    _j = std::clamp(static_cast<decltype(_j)>(std::floor(t * max)), 0, max - 1);
 }
 
-std::set<Cell> Cell::queryNeighbouredCellsCoveringCapOf(const LngLat& center, const double radius) const
+std::set<cell_t> cell_t::neighboured_cells_covering_cap_of(const coordinate_t& center, const double radius) const
 {
-    std::set<Cell> result;
-    std::set<Cell> outside;
-    std::set<Cell> queue { *this };
+    std::set<cell_t> result;
+    std::set<cell_t> outside;
+    std::set<cell_t> queue { *this };
     for (auto it = queue.begin(); it != queue.end(); it = queue.begin()) {
         const auto cell = *it;
         queue.erase(it);
         if (result.contains(cell) || outside.contains(cell)) {
             continue;
         }
-        if (cell.intersectsWithCapOf(center, radius)) {
+        if (cell.intersects_with_cap_of(center, radius)) {
             queue.merge(cell.neighbours());
             result.insert(std::move(cell));
         } else {
@@ -37,32 +37,32 @@ std::set<Cell> Cell::queryNeighbouredCellsCoveringCapOf(const LngLat& center, co
     return std::move(result);
 }
 
-std::array<LngLat, 4> Cell::shape() const {
+std::array<coordinate_t, 4> cell_t::shape() const {
     return {
-        lngLat(0, 0),
-        lngLat(0, 1),
-        lngLat(1, 1),
-        lngLat(1, 0),
+        coordinate(0, 0),
+        coordinate(0, 1),
+        coordinate(1, 1),
+        coordinate(1, 0),
     };
 }
 
-inline Cell::Cell(const uint8_t face, const double i, const double j, uint8_t level)
+inline cell_t::cell_t(const uint8_t face, const double i, const double j, uint8_t level)
 {
-    m_level = level;
+    _level = level;
     const int32_t max = 1 << level;
     if (i >= 0 && j >= 0 && i < max && j < max) {
-        m_face = face;
-        m_i = i;
-        m_j = j;
+        _face = face;
+        _i = i;
+        _j = j;
         return;
     }
     double s, t;
-    ECEFCoordinate(face, (0.5 + i) / max, (0.5 + j) / max).faceST(m_face, s, t);
-    m_i = std::clamp(static_cast<decltype(m_i)>(std::floor(s * max)), 0, max - 1);
-    m_j = std::clamp(static_cast<decltype(m_j)>(std::floor(t * max)), 0, max - 1);
+    ecef_coordinate_t(face, (0.5 + i) / max, (0.5 + j) / max).face_s_t(_face, s, t);
+    _i = std::clamp(static_cast<decltype(_i)>(std::floor(s * max)), 0, max - 1);
+    _j = std::clamp(static_cast<decltype(_j)>(std::floor(t * max)), 0, max - 1);
 }
 
-inline bool Cell::intersectsWithCapOf(const LngLat& center, const double radius) const {
+inline bool cell_t::intersects_with_cap_of(const coordinate_t& center, const double radius) const {
     auto corners = shape();
     std::sort(
         corners.begin(), corners.end(),
@@ -70,117 +70,117 @@ inline bool Cell::intersectsWithCapOf(const LngLat& center, const double radius)
             return center.closer(a, b);
         }
     );
-    return center.distanceTo(corners[0]) < radius || center.distanceTo(corners[0], corners[1]) < radius;
+    return center.distance_to(corners[0]) < radius || center.distance_to(corners[0], corners[1]) < radius;
 }
 
-inline LngLat Cell::lngLat(const double dI, const double dJ) const
+inline coordinate_t cell_t::coordinate(const double d_i, const double d_j) const
 {
-    const double max = 1 << m_level;
+    const double max = 1 << _level;
     return std::move(
-        ECEFCoordinate(
-            m_face,
-            (dI + m_i) / max,
-            (dJ + m_j) / max
+        ecef_coordinate_t(
+            _face,
+            (d_i + _i) / max,
+            (d_j + _j) / max
         )
-        .lngLat()
+        .coordinate()
     );
 }
 
-inline std::set<Cell> Cell::neighbours() const {
+inline std::set<cell_t> cell_t::neighbours() const {
     return {
-        Cell(m_face, m_i - 1, m_j       , m_level),
-        Cell(m_face, m_i    , m_j - 1   , m_level),
-        Cell(m_face, m_i + 1, m_j + 1   , m_level),
-        Cell(m_face, m_i    , m_j       , m_level),
+        cell_t(_face, _i - 1, _j       , _level),
+        cell_t(_face, _i    , _j - 1   , _level),
+        cell_t(_face, _i + 1, _j + 1   , _level),
+        cell_t(_face, _i    , _j       , _level),
     };
 }
 
-inline ECEFCoordinate::ECEFCoordinate(const LngLat& lngLat) {
+inline ecef_coordinate_t::ecef_coordinate_t(const coordinate_t& lngLat) {
     const auto theta = lngLat.theta();
     const auto phi = lngLat.phi();
     const auto cosPhi = std::cos(phi);
-    m_x = std::cos(theta) * cosPhi;
-    m_y = std::sin(theta) * cosPhi;
-    m_z = std::sin(phi);
+    _x = std::cos(theta) * cosPhi;
+    _y = std::sin(theta) * cosPhi;
+    _z = std::sin(phi);
 }
 
-inline ECEFCoordinate::ECEFCoordinate(const uint8_t face, const double s, const double t)
+inline ecef_coordinate_t::ecef_coordinate_t(const uint8_t face, const double s, const double t)
 {
     const auto u = (1.0 / 3.0) * (s >= 0.5 ? (4.0 * s * s - 1) : (1.0 - (4.0 * (1.0 - s) * (1.0 - s))));
     const auto v = (1.0 / 3.0) * (t >= 0.5 ? (4.0 * t * t - 1) : (1.0 - (4.0 * (1.0 - t) * (1.0 - t))));
     switch (face) {
     case 0:
-        m_x = 1;
-        m_y = u;
-        m_z = v;
+        _x = 1;
+        _y = u;
+        _z = v;
         return;
     case 1:
-        m_x = -u;
-        m_y = 1;
-        m_z = v;
+        _x = -u;
+        _y = 1;
+        _z = v;
         return;
     case 2:
-        m_x = -u;
-        m_y = -v;
-        m_z = 1;
+        _x = -u;
+        _y = -v;
+        _z = 1;
         return;
     case 3:
-        m_x = -1;
-        m_y = -v;
-        m_z = -u;
+        _x = -1;
+        _y = -v;
+        _z = -u;
         return;
     case 4:
-        m_x = v;
-        m_y = -1;
-        m_z = -u;
+        _x = v;
+        _y = -1;
+        _z = -u;
         return;
     case 5:
-        m_x = v;
-        m_y = u;
-        m_z = -1;
+        _x = v;
+        _y = u;
+        _z = -1;
         return;
     }
 }
 
-inline LngLat ECEFCoordinate::lngLat() const {
+inline coordinate_t ecef_coordinate_t::coordinate() const {
     return std::move(
-        LngLat(
-            std::atan2(m_y, m_x) / std::numbers::pi * 180.0,
-            std::atan2(m_z, std::sqrt(m_x * m_x + m_y * m_y)) / std::numbers::pi * 180.0
+        coordinate_t(
+            std::atan2(_y, _x) / std::numbers::pi * 180.0,
+            std::atan2(_z, std::sqrt(_x * _x + _y * _y)) / std::numbers::pi * 180.0
         )
     );
 }
 
-inline void ECEFCoordinate::faceST(uint8_t& face, double& s, double& t) const {
-    face = m_x > m_y ? (m_x > m_z ? 0 : 2) : (m_y > m_z ? 1 :2);
-    if ((face == 0 && m_x < 0) || (face == 1 && m_y < 0) || (face == 2 && m_z < 0)) {
+inline void ecef_coordinate_t::face_s_t(uint8_t& face, double& s, double& t) const {
+    face = _x > _y ? (_x > _z ? 0 : 2) : (_y > _z ? 1 :2);
+    if ((face == 0 && _x < 0) || (face == 1 && _y < 0) || (face == 2 && _z < 0)) {
         face += 3;
     }
     // (s, t) as (u, v)
     switch (face) {
     case 0:
-        s = m_y / m_x;
-        t = m_z / m_x;
+        s = _y / _x;
+        t = _z / _x;
         break;
     case 1:
-        s = -m_x / m_y;
-        t = m_z / m_y;
+        s = -_x / _y;
+        t = _z / _y;
         break;
     case 2:
-        s = -m_x / m_z;
-        t = m_y / m_z;
+        s = -_x / _z;
+        t = _y / _z;
         break;
     case 3:
-        s = m_z / m_x;
-        t = m_y / m_x;
+        s = _z / _x;
+        t = _y / _x;
         break;
     case 4:
-        s = m_z / m_y;
-        t = -m_x / m_y;
+        s = _z / _y;
+        t = -_x / _y;
         break;
     case 5:
-        s = -m_y / m_z;
-        t = m_x / m_z;
+        s = -_y / _z;
+        t = _x / _z;
         break;
     }
     s = s >= 0 ? (0.5 * std::sqrt(1 + 3 * s)) : (1.0 - 0.5 * std::sqrt(1 - 3 * s));

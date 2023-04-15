@@ -1,5 +1,10 @@
 #include "boost_extensions/json_tag_invoke.hpp"
 
+#include <boost/json/value_from.hpp>
+
+#include "type/portal_t.hpp"
+#include "type/drawn_item_t.hpp"
+
 namespace ingress_drone_explorer {
 
 template<typename T>
@@ -8,37 +13,37 @@ inline void extract(const boost::json::object& object, const boost::json::string
     to = boost::json::value_to<T>(object.at(key));
 }
 
-LngLat tag_invoke(const boost::json::value_to_tag<LngLat>&, const boost::json::value& value) {
+coordinate_t tag_invoke(const boost::json::value_to_tag<coordinate_t>&, const boost::json::value& value) {
     const auto& object = value.as_object();
-    LngLat tag;
-    extract(object, "lng", tag.m_lng);
-    extract(object, "lat", tag.m_lat);
+    coordinate_t tag;
+    extract(object, "lng", tag._lng);
+    extract(object, "lat", tag._lat);
     return std::move(tag);
 }
 
-Portal tag_invoke(const boost::json::value_to_tag<Portal>&, const boost::json::value& value) {
+portal_t tag_invoke(const boost::json::value_to_tag<portal_t>&, const boost::json::value& value) {
     const auto& object = value.as_object();
-    Portal tag;
-    extract(object, "guid", tag.m_guid);
+    portal_t tag;
+    extract(object, "guid", tag._guid);
     if (object.contains("title")) {
-        extract(object, "title", tag.m_title);
+        extract(object, "title", tag._title);
     }
-    extract(object, "lngLat", tag.m_lngLat);
+    extract(object, "lngLat", tag._coordinate);
     return std::move(tag);
 }
 
-void tag_invoke(const boost::json::value_from_tag&, boost::json::value& value, const DrawnItem& tag) {
+void tag_invoke(const boost::json::value_from_tag&, boost::json::value& value, const drawn_item_t& tag) {
     value = {
-        { "type", tag.m_type },
-        { "color", tag.m_color },
-        { "latLngs", boost::json::value_from(tag.m_lngLats) }
+        { "type", tag._type },
+        { "color", tag._color },
+        { "latLngs", boost::json::value_from(tag._coordinates) }
     };
 }
 
-void tag_invoke(const boost::json::value_from_tag&, boost::json::value& value, const LngLat& tag) {
+void tag_invoke(const boost::json::value_from_tag&, boost::json::value& value, const coordinate_t& tag) {
     value = {
-        { "lng", tag.m_lng },
-        { "lat", tag.m_lat }
+        { "lng", tag._lng },
+        { "lat", tag._lat }
     };
 }
 

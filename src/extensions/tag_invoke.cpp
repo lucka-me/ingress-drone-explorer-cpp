@@ -2,8 +2,8 @@
 
 #include <boost/json/value_from.hpp>
 
-#include "type/portal_t.hpp"
-#include "type/drawn_item_t.hpp"
+#include "definitions/drawn_item_t.hpp"
+#include "definitions/portal_t.hpp"
 
 namespace ingress_drone_explorer {
 

@@ -3,7 +3,7 @@
 #include <map>
 #include <vector>
 
-#include "type/portal_t.hpp"
+#include "definitions/portal_t.hpp"
 #include "s2.hpp"
 
 namespace ingress_drone_explorer {

@@ -1,6 +1,6 @@
 #include "extensions/iostream_extensions.hpp"
 
-#include "type/coordinate_t.hpp"
+#include "definitions/coordinate_t.hpp"
 #include "s2.hpp"
 
 namespace ingress_drone_explorer {

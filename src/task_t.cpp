@@ -7,9 +7,9 @@
 
 #include <boost/json.hpp>
 
+#include "definitions/drawn_item_t.hpp"
 #include "extensions/iostream_extensions.hpp"
 #include "extensions/tag_invoke.hpp"
-#include "type/drawn_item_t.hpp"
 #include "utils.hpp"
 
 namespace ingress_drone_explorer {

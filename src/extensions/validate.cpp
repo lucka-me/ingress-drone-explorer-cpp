@@ -3,7 +3,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/program_options/value_semantic.hpp>
 
-#include "type/coordinate_t.hpp"
+#include "definitions/coordinate_t.hpp"
 
 namespace ingress_drone_explorer {
 

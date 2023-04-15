@@ -1,4 +1,4 @@
-#include "type/coordinate_t.hpp"
+#include "definitions/coordinate_t.hpp"
 
 #include <cmath>
 

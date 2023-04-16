@@ -2,9 +2,6 @@
 
 #include <iostream>
 
-#include "definitions/coordinate_t.hpp"
-#include "s2.hpp"
-
 namespace ingress_drone_explorer {
 
 struct coordinate_t;

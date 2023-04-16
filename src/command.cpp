@@ -4,9 +4,8 @@
 
 #include <boost/program_options.hpp>
 
-#include "definitions/coordinate_t.hpp"
 #include "extensions/iostream_extensions.hpp"
-#include "task_t.hpp"
+#include "task/task_t.hpp"
 
 namespace ingress_drone_explorer {
 

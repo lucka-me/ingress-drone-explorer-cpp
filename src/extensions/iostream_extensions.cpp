@@ -1,7 +1,7 @@
 #include "extensions/iostream_extensions.hpp"
 
 #include "definitions/coordinate_t.hpp"
-#include "s2.hpp"
+#include "s2/cell_t.hpp"
 
 namespace ingress_drone_explorer {
 

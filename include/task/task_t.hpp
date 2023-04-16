@@ -1,10 +1,11 @@
 #pragma once
 
 #include <map>
+#include <set>
 #include <vector>
 
 #include "definitions/portal_t.hpp"
-#include "s2.hpp"
+#include "s2/cell_t.hpp"
 
 namespace ingress_drone_explorer {
 

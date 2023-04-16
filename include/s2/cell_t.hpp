@@ -15,11 +15,12 @@ struct cell_t {
     int32_t _i;
     int32_t _j;
 
-    cell_t(const coordinate_t& lngLat, const uint8_t level = 16);
+    cell_t(const coordinate_t& coordinate, const uint8_t level = 16);
 
 public:
     inline auto operator<=>(const cell_t& other) const = default;
-    
+
+public:
     std::set<cell_t> neighboured_cells_covering_cap_of(const coordinate_t& center, const double radius) const;
     std::array<coordinate_t, 4> shape() const;
 
@@ -40,19 +41,6 @@ template<typename T>
 static inline auto operator<(const std::pair<const cell_t, T>& a, const cell_t& b) {
     return a.first < b;
 }
-
-struct ecef_coordinate_t
-{
-    double _x;
-    double _y;
-    double _z;
-
-    inline ecef_coordinate_t(const coordinate_t& lngLat);
-    inline ecef_coordinate_t(const uint8_t face, const double s, const double t);
-
-    inline coordinate_t coordinate() const;
-    inline void face_s_t(uint8_t& face, double& s, double& t) const;
-};
 
 } // namespace s2
 

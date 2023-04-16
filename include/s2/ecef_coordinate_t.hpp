@@ -10,8 +10,7 @@ namespace ingress_drone_explorer {
 
 namespace s2 {
 
-struct ecef_coordinate_t
-{
+struct ecef_coordinate_t {
     double _x;
     double _y;
     double _z;
@@ -47,7 +46,9 @@ struct ecef_coordinate_t
         );
     }
     inline void face_s_t(uint8_t& face, double& s, double& t) const {
-        face = _x > _y ? (_x > _z ? 0 : 2) : (_y > _z ? 1 :2);
+        const auto abs_x = std::abs(_x);
+        const auto abs_y = std::abs(_y);
+        face = abs_x > abs_y ? (abs_x > std::abs(_z) ? 0 : 2) : (abs_y > std::abs(_z) ? 1 : 2);
         if ((face == 0 && _x < 0) || (face == 1 && _y < 0) || (face == 2 && _z < 0)) {
             face += 3;
         }
@@ -55,11 +56,12 @@ struct ecef_coordinate_t
         switch (face) {
         case 0: s =  _y / _x; t =  _z / _x; break;
         case 1: s = -_x / _y; t =  _z / _y; break;
-        case 2: s = -_x / _z; t =  _y / _z; break;
+        case 2: s = -_x / _z; t = -_y / _z; break;
         case 3: s =  _z / _x; t =  _y / _x; break;
         case 4: s =  _z / _y; t = -_x / _y; break;
-        case 5: s = -_y / _z; t =  _x / _z; break;
+        case 5: s = -_y / _z; t = -_x / _z; break;
         }
+
         s = s >= 0 ? (0.5 * std::sqrt(1 + 3 * s)) : (1.0 - 0.5 * std::sqrt(1 - 3 * s));
         t = t >= 0 ? (0.5 * std::sqrt(1 + 3 * t)) : (1.0 - 0.5 * std::sqrt(1 - 3 * t));
     }

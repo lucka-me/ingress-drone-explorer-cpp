@@ -19,8 +19,19 @@ cell_t::cell_t(const coordinate_t& coordinate, const uint8_t level) {
     _j = std::clamp(static_cast<decltype(_j)>(std::floor(t * max)), 0, max - 1);
 }
 
-std::set<cell_t> cell_t::neighboured_cells_covering_cap_of(const coordinate_t& center, const double radius) const
-{
+bool cell_t::intersects_with_cap_of(const coordinate_t& center, const double radius) const {
+    auto corners = shape();
+    /// TODO: We only needs the cloest one or two at most
+    std::sort(
+        corners.begin(), corners.end(),
+        [&](const auto& a, const auto& b) {
+            return center.closer(a, b);
+        }
+    );
+    return center.distance_to(corners[0]) < radius || center.distance_to(corners[0], corners[1]) < radius;
+}
+
+std::set<cell_t> cell_t::neighboured_cells_covering_cap_of(const coordinate_t& center, const double radius) const {
     std::set<cell_t> result;
     std::set<cell_t> outside;
     std::set<cell_t> queue { *this };
@@ -40,6 +51,22 @@ std::set<cell_t> cell_t::neighboured_cells_covering_cap_of(const coordinate_t& c
     return std::move(result);
 }
 
+std::set<cell_t> cell_t::neighboured_cells_in(const int32_t rounds) const {
+    std::set<cell_t> result;
+    /// TODO: Check if correct near the edge of face?
+    /// Maybe we need the algorithm of neighboured_cells_covering_cap_of to "search" instead of generate?
+    for (int32_t round = 0; round < rounds; ++round) {
+        const int32_t steps = (round + 1) * 2;
+        for (int32_t step = 0; step < steps; ++step) {
+            result.insert(cell_t(_face, _i - round - 1   , _j - round + step, _level)); // Left, upward
+            result.insert(cell_t(_face, _i - round + step, _j + round + 1   , _level)); // Top, rightward
+            result.insert(cell_t(_face, _i + round + 1   , _j + round - step, _level)); // Right, downward
+            result.insert(cell_t(_face, _i + round - step, _j - round - 1   , _level)); // Bottom, leftward
+        }
+    }
+    return std::move(result);
+}
+
 std::array<coordinate_t, 4> cell_t::shape() const {
     return {
         coordinate(0, 0),
@@ -49,8 +76,7 @@ std::array<coordinate_t, 4> cell_t::shape() const {
     };
 }
 
-inline cell_t::cell_t(const uint8_t face, const double i, const double j, uint8_t level)
-{
+inline cell_t::cell_t(const uint8_t face, const int32_t i, const int32_t j, uint8_t level) {
     _level = level;
     const int32_t max = 1 << level;
     if (i >= 0 && j >= 0 && i < max && j < max) {
@@ -63,17 +89,6 @@ inline cell_t::cell_t(const uint8_t face, const double i, const double j, uint8_
     ecef_coordinate_t(face, (0.5 + i) / max, (0.5 + j) / max).face_s_t(_face, s, t);
     _i = std::clamp(static_cast<decltype(_i)>(std::floor(s * max)), 0, max - 1);
     _j = std::clamp(static_cast<decltype(_j)>(std::floor(t * max)), 0, max - 1);
-}
-
-inline bool cell_t::intersects_with_cap_of(const coordinate_t& center, const double radius) const {
-    auto corners = shape();
-    std::sort(
-        corners.begin(), corners.end(),
-        [&](const auto& a, const auto& b) {
-            return center.closer(a, b);
-        }
-    );
-    return center.distance_to(corners[0]) < radius || center.distance_to(corners[0], corners[1]) < radius;
 }
 
 inline coordinate_t cell_t::coordinate(const double d_i, const double d_j) const {

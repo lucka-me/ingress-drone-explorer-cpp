@@ -21,13 +21,14 @@ public:
     inline auto operator<=>(const cell_t& other) const = default;
 
 public:
+    bool intersects_with_cap_of(const coordinate_t& center, const double radius) const;
     std::set<cell_t> neighboured_cells_covering_cap_of(const coordinate_t& center, const double radius) const;
+    std::set<cell_t> neighboured_cells_in(const int32_t rounds) const;
     std::array<coordinate_t, 4> shape() const;
 
 private:
-    inline cell_t(const uint8_t face, const double i, const double j, uint8_t level = 16);
+    inline cell_t(const uint8_t face, const int32_t i, const int32_t j, uint8_t level = 16);
 
-    inline bool intersects_with_cap_of(const coordinate_t& center, const double radius) const;
     inline coordinate_t coordinate(const double d_i, const double d_j) const;
     inline std::set<cell_t> neighbours() const;
 };

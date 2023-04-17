@@ -1,5 +1,7 @@
 #include "extensions/iostream_extensions.hpp"
 
+#include <string>
+
 #include "definitions/coordinate_t.hpp"
 #include "s2/cell_t.hpp"
 
@@ -18,8 +20,7 @@ std::ostream& operator<<(std::ostream& out, const coordinate_t& value) {
     return out << value._lng << "," << value._lat;
 }
 
-namespace s2
-{
+namespace s2 {
 
 std::ostream& operator<<(std::ostream& out, const cell_t& value) {
     return out

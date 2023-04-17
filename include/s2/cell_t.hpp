@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <cstdint>
 #include <set>
 
 namespace ingress_drone_explorer {

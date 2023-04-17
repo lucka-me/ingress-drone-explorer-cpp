@@ -23,12 +23,7 @@ double coordinate_t::distance_to(const coordinate_t& a, const coordinate_t& b) c
         return distance_to(b);
     }
     const auto ratio = c_1 / c_2;
-    return distance_to(
-        {
-            a._lng + ratio * (b._lng - a._lng),
-            a._lat + ratio * (b._lat - a._lat)
-        }
-    );
+    return distance_to({ a._lng + ratio * (b._lng - a._lng), a._lat + ratio * (b._lat - a._lat) });
 }
 
 bool coordinate_t::closer(const coordinate_t& a, const coordinate_t& b) const {

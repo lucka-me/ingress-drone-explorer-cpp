@@ -9,8 +9,7 @@
 
 namespace ingress_drone_explorer {
 
-void command::execute(const int argc, const char* const argv[])
-{
+void command::execute(const int argc, const char* const argv[]) {
     std::vector<std::string> portal_list_filenames;
     coordinate_t start;
 

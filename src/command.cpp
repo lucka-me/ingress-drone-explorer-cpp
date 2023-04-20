@@ -5,7 +5,7 @@
 #include <boost/program_options.hpp>
 
 #include "extensions/iostream_extensions.hpp"
-#include "task/task_t.hpp"
+#include "explorer/explorer_t.hpp"
 
 namespace ingress_drone_explorer {
 
@@ -46,15 +46,15 @@ void command::execute(const int argc, const char* const argv[]) {
 
     boost::program_options::notify(variables);
 
-    task_t task;
-    task.load_portals(portal_list_filenames);
+    explorer_t explorer;
+    explorer.load_portals(portal_list_filenames);
     if (variables.count("key-list")) {
-        task.load_keys(variables["key-list"].as<std::string>());
+        explorer.load_keys(variables["key-list"].as<std::string>());
     }
-    task.explore_from(start);
-    task.report();
+    explorer.explore_from(start);
+    explorer.report();
     if (variables.count("output-drawn-items")) {
-        task.save_drawn_items_to(variables["output-drawn-items"].as<std::string>());
+        explorer.save_drawn_items_to(variables["output-drawn-items"].as<std::string>());
     }
 }
 

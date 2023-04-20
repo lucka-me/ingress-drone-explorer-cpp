@@ -1,4 +1,4 @@
-#include "task/task_t.hpp"
+#include "explorer/explorer_t.hpp"
 
 #include <chrono>
 #include <filesystem>
@@ -12,7 +12,7 @@
 
 namespace ingress_drone_explorer {
 
-void task_t::load_portals(const std::vector<std::string>& filenames) {
+void explorer_t::load_portals(const std::vector<std::string>& filenames) {
     const auto start_time = std::chrono::steady_clock::now();
     std::cout << "⏳ Loading Portals..." << std::endl;
 
@@ -93,7 +93,7 @@ void task_t::load_portals(const std::vector<std::string>& filenames) {
         << std::endl;
 }
 
-void task_t::load_keys(const std::string& filename) {
+void explorer_t::load_keys(const std::string& filename) {
     std::cout << "⏳ Loading Keys from " << filename << "..." << std::endl;
     std::ifstream in(filename);
     if (!in.is_open()) {

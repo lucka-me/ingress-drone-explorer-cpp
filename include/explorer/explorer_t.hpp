@@ -9,7 +9,7 @@
 
 namespace ingress_drone_explorer {
 
-class task_t {
+class explorer_t {
 public:
     void load_portals(const std::vector<std::string>& filenames);
     void load_keys(const std::string& filename);

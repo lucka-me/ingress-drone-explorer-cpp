@@ -1,4 +1,4 @@
-#include "task/task_t.hpp"
+#include "explorer/explorer_t.hpp"
 
 #include <chrono>
 #include <iomanip>
@@ -8,7 +8,7 @@
 
 namespace ingress_drone_explorer {
 
-void task_t::explore_from(const coordinate_t& start) {
+void explorer_t::explore_from(const coordinate_t& start) {
     _start = start;
     const auto start_time = std::chrono::steady_clock::now();
     const auto start_cell = s2::cell_t(start);

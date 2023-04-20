@@ -1,4 +1,4 @@
-#include "task/task_t.hpp"
+#include "explorer/explorer_t.hpp"
 
 #include <fstream>
 #include <iomanip>
@@ -12,7 +12,7 @@
 
 namespace ingress_drone_explorer {
 
-void task_t::report() const {
+void explorer_t::report() const {
     size_t portals_count = 0;
     size_t reachable_portals_count = 0;
     portal_t furthest_portal;
@@ -38,12 +38,12 @@ void task_t::report() const {
             << std::endl;
         return;
     }
-    const auto total_numberDigits = digits(portals_count);
+    const auto total_number_digits = digits(portals_count);
     const auto reachable_number_digits = digits(reachable_portals_count);
     const auto unreachable_number_digits = digits(portals_count - reachable_portals_count);
     std::cout
         << "⬜️ In "
-        << std::setw(total_numberDigits) << _cells.size()
+        << std::setw(total_number_digits) << _cells.size()
         << "   cell(s), "
         << std::setw(reachable_number_digits) << _reachable_cells.size()
         << " are ✅ reachable, "
@@ -52,7 +52,7 @@ void task_t::report() const {
         << std::endl;
     std::cout
         << "📍 In "
-        << std::setw(total_numberDigits) << portals_count
+        << std::setw(total_number_digits) << portals_count
         << " Portal(s), "
         << std::setw(reachable_number_digits) << reachable_portals_count
         << " are ✅ reachable, "
@@ -72,7 +72,7 @@ void task_t::report() const {
             << std::endl;
 }
 
-void task_t::save_drawn_items_to(const std::string& filename) const {
+void explorer_t::save_drawn_items_to(const std::string& filename) const {
     std::ofstream out(filename);
     if (!out.is_open()) {
         throw std::runtime_error("Unable to open drawn items file.");

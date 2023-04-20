@@ -31,7 +31,7 @@ bool cell_t::intersects_with_cap_of(const coordinate_t& center, const double rad
     return center.distance_to(corners[0]) < radius || center.distance_to(corners[0], corners[1]) < radius;
 }
 
-std::set<cell_t> cell_t::neighboured_cells_covering_cap_of(const coordinate_t& center, const double radius) const {
+std::set<cell_t> cell_t::neighbored_cells_covering_cap_of(const coordinate_t& center, const double radius) const {
     std::set<cell_t> result;
     std::set<cell_t> outside;
     std::set<cell_t> queue { *this };
@@ -51,10 +51,10 @@ std::set<cell_t> cell_t::neighboured_cells_covering_cap_of(const coordinate_t& c
     return std::move(result);
 }
 
-std::set<cell_t> cell_t::neighboured_cells_in(const int32_t rounds) const {
+std::set<cell_t> cell_t::neighbored_cells_in(const int32_t rounds) const {
     std::set<cell_t> result;
     /// TODO: Check if correct near the edge of face?
-    /// Maybe we need the algorithm of neighboured_cells_covering_cap_of to "search" instead of generate?
+    /// Maybe we need the algorithm of neighbored_cells_covering_cap_of to "search" instead of generate?
     for (int32_t round = 0; round < rounds; ++round) {
         const int32_t steps = (round + 1) * 2;
         for (int32_t step = 0; step < steps; ++step) {

@@ -23,8 +23,8 @@ public:
 
 public:
     bool intersects_with_cap_of(const coordinate_t& center, const double radius) const;
-    std::set<cell_t> neighboured_cells_covering_cap_of(const coordinate_t& center, const double radius) const;
-    std::set<cell_t> neighboured_cells_in(const int32_t rounds) const;
+    std::set<cell_t> neighbored_cells_covering_cap_of(const coordinate_t& center, const double radius) const;
+    std::set<cell_t> neighbored_cells_in(const int32_t rounds) const;
     std::array<coordinate_t, 4> shape() const;
 
 private:

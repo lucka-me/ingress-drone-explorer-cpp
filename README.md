@@ -1,32 +1,32 @@
 # Ingress Drone Explorer - C++
 
 [![CI](https://github.com/lucka-me/ingress-drone-explorer-cpp/actions/workflows/ci.yml/badge.svg)](https://github.com/lucka-me/ingress-drone-explorer-cpp/actions/workflows/ci.yml "CI Workflow")
+[![Lines of code][cpp-loc]][cpp-repo]
 
 An offline CLI tool to analyze reachable Portals for Ingress Drone Mark I.
 
-A Swift implementation is also [available](https://github.com/lucka-me/ingress-drone-explorer-swift).
-The C++ implementation is faster but the code is much more complex.
+Implementations in different languages are listed and compared in [Benchmark](#benchmark).
 
 The CI workflow builds universal binary for macOS and x86_64 binaries for Windows & Linux, the files are available as artifacts.
 
-## Requirements
+## Build from Source
 
-- CMake
-- Boost
+### Requirements
+
+- CMake (3.23 is marked but backporting should be possible)
+- Boost (1.79 is used in CI)
     - JSON
     - Program Options
-- CXX that supports C++20
+- CXX that supports C++20 (Backporting is possible and should be easy)
 
-## Build
-
-Clone the repository and simply:
+### Build
 
 ```sh
 $ cmake -B build
 $ cmake --build build
 ```
 
-## Usage
+## Exploration Guide
 
 ### Prepare Files
 
@@ -45,25 +45,60 @@ All the files should be JSON.
     ```
 2. Portal Key list file, should be an array of GUID (Not required but strongly recommended)
 
-Maybe an IITC plugin like [this](https://github.com/lucka-me/toolkit/tree/master/Ingress/Portal-List-Exporter) can help.
+Maybe an IITC plugin like [this](https://github.com/lucka-me/toolkit/tree/master/Ingress/Portal-List-Exporter) helps.
 
-### Run
+### Usage
 
-```sh
-$ ./bin/ingress-drone-explorer <path-to-portal-list-files> -s <start point>
 ```
+$ ingress-drone-explorer <portal-list-file> -s <longitude,latitude> [options...]
+```
+
+#### Options
 
 Explore with key list:
 ```sh
-$ ./bin/ingress-drone-explorer ... -k <path-to-key-list-file>
+$ ... -k <path-to-key-list-file>
 ```
 
-Output cells for IITC Draw tools:
+Output cells JSON for IITC Draw tools:
 ```sh
-$ ./bin/ingress-drone-explorer ... --output-drawn-items <path-to-output>
+$ ... --output-drawn-items <path-to-output>
 ```
 
 Help information:
 ```sh
-$ ./bin/ingress-drone-explorer -h
+$ ingress-drone-explorer -h
 ```
+
+## Benchmark
+
+### Sample Data
+
+- Area: Shenzhen downtown and Hong Kong
+- Portals: 34,041 Portals in 13,451 cells
+- Keys: 11 matched
+- Start Point: Shenzhen Bay Sports Center
+- Result: 30,462 Portals and 11,342 cells are reachable
+
+### Result
+
+Average exploration time consumed of 100 executions on MacBook Air (M2).
+
+|         Implementation | Lines of Code   |  Commit                              | Consumed
+| ---------------------: | :-------------: | :----------------------------------: | :---
+|        [C++][cpp-repo] | ![][cpp-loc]    | `Current`                            | 0.583 s
+| [Node.js][nodejs-repo] | ![][nodejs-loc] | [`7ad90e9`][nodejs-benchmark-commit] | 1.295 s
+|    [Swift][swift-repo] | ![][swift-loc]  | [`68ae1b4`][swift-benchmark-commit]  | 3.000 s
+
+The results of other implementations may be outdated, please check their repositories for latest results.
+
+[cpp-repo]: https://github.com/lucka-me/ingress-drone-explorer-cpp
+[cpp-loc]: https://img.shields.io/tokei/lines/github/lucka-me/ingress-drone-explorer-cpp
+
+[nodejs-repo]: https://github.com/lucka-me/ingress-drone-explorer-nodejs
+[nodejs-loc]: https://img.shields.io/tokei/lines/github/lucka-me/ingress-drone-explorer-nodejs
+[nodejs-benchmark-commit]: https://github.com/lucka-me/ingress-drone-explorer-nodejs/commit/7ad90e9
+
+[swift-repo]: https://github.com/lucka-me/ingress-drone-explorer-swift
+[swift-loc]: https://img.shields.io/tokei/lines/github/lucka-me/ingress-drone-explorer-swift
+[swift-benchmark-commit]: https://github.com/lucka-me/ingress-drone-explorer-swift/commit/68ae1b4

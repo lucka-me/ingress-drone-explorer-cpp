@@ -31,18 +31,8 @@ private:
     inline cell_t(const uint8_t face, const int32_t i, const int32_t j, uint8_t level = 16);
 
     inline coordinate_t coordinate(const double d_i, const double d_j) const;
-    inline std::set<cell_t> neighbours() const;
+    inline std::set<cell_t> neighbors() const;
 };
-
-template<typename T>
-static inline auto operator<(const cell_t& a, const std::pair<const cell_t, T>& b) {
-    return a < b.first;
-}
-
-template<typename T>
-static inline auto operator<(const std::pair<const cell_t, T>& a, const cell_t& b) {
-    return a.first < b;
-}
 
 } // namespace s2
 

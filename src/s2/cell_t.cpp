@@ -42,7 +42,7 @@ std::set<cell_t> cell_t::neighbored_cells_covering_cap_of(const coordinate_t& ce
             continue;
         }
         if (cell.intersects_with_cap_of(center, radius)) {
-            queue.merge(cell.neighbours());
+            queue.merge(cell.neighbors());
             result.insert(std::move(cell));
         } else {
             outside.insert(std::move(cell));
@@ -103,7 +103,7 @@ inline coordinate_t cell_t::coordinate(const double d_i, const double d_j) const
     );
 }
 
-inline std::set<cell_t> cell_t::neighbours() const {
+inline std::set<cell_t> cell_t::neighbors() const {
     return {
         cell_t(_face, _i - 1, _j       , _level),
         cell_t(_face, _i    , _j - 1   , _level),

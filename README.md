@@ -84,11 +84,12 @@ $ ingress-drone-explorer -h
 
 Average exploration time consumed of 100 executions on MacBook Air (M2).
 
-|         Implementation | Lines of Code   |  Commit                              | Consumed
+|                        | Lines           |  Commit                              | Consumed
 | ---------------------: | :-------------: | :----------------------------------: | :---
 |        [C++][cpp-repo] | ![][cpp-loc]    | `Current`                            | 0.583 s
 | [Node.js][nodejs-repo] | ![][nodejs-loc] | [`7ad90e9`][nodejs-benchmark-commit] | 1.295 s
-|    [Swift][swift-repo] | ![][swift-loc]  | [`68ae1b4`][swift-benchmark-commit]  | 3.000 s
+|  [Python][python-repo] | ![][python-loc] | [`841b9f0`][python-benchmark-commit] | 2.813 s
+|    [Swift][swift-repo] | ![][swift-loc]  | [`2c73a58`][swift-benchmark-commit]  | 0.722 s
 
 The results of other implementations may be outdated, please check their repositories for latest results.
 
@@ -99,6 +100,10 @@ The results of other implementations may be outdated, please check their reposit
 [nodejs-loc]: https://img.shields.io/tokei/lines/github/lucka-me/ingress-drone-explorer-nodejs
 [nodejs-benchmark-commit]: https://github.com/lucka-me/ingress-drone-explorer-nodejs/commit/7ad90e9
 
+[python-repo]: https://github.com/lucka-me/ingress-drone-explorer-python
+[python-loc]: https://img.shields.io/tokei/lines/github/lucka-me/ingress-drone-explorer-python
+[python-benchmark-commit]: https://github.com/lucka-me/ingress-drone-explorer-python/commit/841b9f0
+
 [swift-repo]: https://github.com/lucka-me/ingress-drone-explorer-swift
 [swift-loc]: https://img.shields.io/tokei/lines/github/lucka-me/ingress-drone-explorer-swift
-[swift-benchmark-commit]: https://github.com/lucka-me/ingress-drone-explorer-swift/commit/68ae1b4
+[swift-benchmark-commit]: https://github.com/lucka-me/ingress-drone-explorer-swift/commit/2c73a58

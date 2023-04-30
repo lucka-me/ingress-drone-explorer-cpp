@@ -26,7 +26,6 @@ void command::execute(const int argc, const char* const argv[]) {
             "The starting point."
         )
         ("key-list,k", boost::program_options::value<std::string>(), "Path of key list file.")
-        ("output-record,o", boost::program_options::value<std::string>(), "Path of record file to output.")
         ("output-drawn-items", boost::program_options::value<std::string>(), "Path of drawn items file to output.")
         ("help,h", "Show help information.");
 

@@ -12,13 +12,11 @@ double coordinate_t::distance_to(const coordinate_t& other) const {
 }
 
 double coordinate_t::distance_to(const coordinate_t& a, const coordinate_t& b) const {
-    const auto c_1 = (b._lat - a._lat) * (_lat - a._lat)
-        + (b._lng - a._lng) * (_lng - a._lng);
+    const auto c_1 = (b._lat - a._lat) * (_lat - a._lat) + (b._lng - a._lng) * (_lng - a._lng);
     if (c_1 <= 0) {
         return distance_to(a);
     }
-    const auto c_2 = (b._lat - a._lat) * (b._lat - a._lat)
-        + (b._lng - a._lng) * (b._lng - a._lng);
+    const auto c_2 = (b._lat - a._lat) * (b._lat - a._lat) + (b._lng - a._lng) * (b._lng - a._lng);
     if (c_2 <= c_1) {
         return distance_to(b);
     }

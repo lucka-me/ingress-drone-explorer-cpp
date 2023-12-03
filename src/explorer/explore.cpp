@@ -27,20 +27,17 @@ void explorer_t::explore_from(const coordinate_t& start) {
     const auto progress_digits = digits(_cells.size());
 
     for (auto it = queue.begin(); it != queue.end(); it = queue.begin()) {
-
-        const auto cell = *it;
-        queue.erase(it);
-
-        const auto portals = _cells.find(cell);
+        const auto portals = _cells.find(*it);
         if (_cells.end() == portals) {
+            queue.erase(it);
             continue;
         }
-        _reachable_cells.insert(cell);
+        _reachable_cells.insert(*it);
 
         // Get all neighbors in the visible range (also the possible ones), filter the empty/pending/reached ones and
         // search for reachable ones
         constexpr int32_t safe_rounds_for_visible_radius = (_visible_radius / 80) + 1;
-        const auto neighbors = cell.neighbored_cells_in(safe_rounds_for_visible_radius);
+        const auto neighbors = it->neighbored_cells_in(safe_rounds_for_visible_radius);
         for (const auto& neighbor : neighbors) {
             if (queue.contains(neighbor) || _reachable_cells.contains(neighbor) || !_cells.contains(neighbor)) {
                 continue;
@@ -53,21 +50,26 @@ void explorer_t::explore_from(const coordinate_t& start) {
             }
         }
 
+        queue.erase(it);
+
         // Find keys
         /// TODO: Consider to use cell.neighbored_cells_in instead?
         if (!_cells_containing_keys.empty()) {
             for (const auto& portal : portals->second) {
                 std::erase_if(_cells_containing_keys, [&](const auto& item) {
+                    bool shouldErase = false;
                     if (queue.contains(item.first)) {
-                        return true;
-                    }
-                    for (const auto& target : item.second) {
-                        if (portal._coordinate.distance_to(target._coordinate) < _reachable_radius_with_key) {
-                            queue.insert(item.first);
-                            return true;
+                        shouldErase = true;
+                    } else {
+                        for (const auto& target : item.second) {
+                            if (portal._coordinate.distance_to(target._coordinate) < _reachable_radius_with_key) {
+                                queue.insert(item.first);
+                                shouldErase = true;
+                                break;
+                            }
                         }
                     }
-                    return false;
+                    return shouldErase;
                 });
                 if (_cells_containing_keys.empty()) {
                     break;

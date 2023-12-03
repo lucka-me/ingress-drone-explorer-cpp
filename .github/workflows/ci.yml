@@ -119,7 +119,7 @@ jobs:
           echo "CC=${{ matrix.arch }}-linux-gnu-gcc" >> $GITHUB_ENV
           echo "CXX=${{ matrix.arch }}-linux-gnu-g++" >> $GITHUB_ENV
           echo "using gcc : ${{ matrix.arch }} : ${{ matrix.arch }}-linux-gnu-g++ ;" >> $HOME/user-config.jam
-          echo 'BOOST_B2_FLAGS="toolset=gcc-${{ matrix.arch }}"' >> $GITHUB_ENV
+          echo "BOOST_B2_FLAGS=toolset=gcc-${{ matrix.arch }}" >> $GITHUB_ENV
 
       - name: Setup Cache for Boost
         uses: actions/cache@v3

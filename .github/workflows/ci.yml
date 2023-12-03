@@ -118,6 +118,8 @@ jobs:
           sudo apt-get install -y g++-${{ matrix.arch }}-linux-gnu binutils-${{ matrix.arch }}-linux-gnu
           echo "CC=${{ matrix.arch }}-linux-gnu-gcc" >> $GITHUB_ENV
           echo "CXX=${{ matrix.arch }}-linux-gnu-g++" >> $GITHUB_ENV
+          echo "using gcc : ${{ matrix.arch }} : ${{ matrix.arch }}-linux-gnu-g++ ;" >> $HOME/user-config.jam
+          echo 'BOOST_B2_FLAGS="toolset=gcc-${{ matrix.arch }}"' >> $GITHUB_ENV
 
       - name: Setup Cache for Boost
         uses: actions/cache@v3
@@ -133,7 +135,7 @@ jobs:
           7z x -y ${{ env.BOOST_SOURCE }}/source.7z -o${{ env.BOOST_SOURCE }}
           cd ${{ env.BOOST_SOURCE }}/boost_1_79_0
           ./bootstrap.sh --prefix=${{ env.BOOST_ROOT }} --with-libraries=json,program_options
-          ./b2 install link=static cxxstd=20
+          ./b2 install link=static cxxstd=20 $BOOST_B2_FLAGS
 
       - name: Configure CMake
         run: >

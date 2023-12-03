@@ -7,7 +7,7 @@ An offline CLI tool to analyze reachable Portals for Ingress Drone Mark I.
 
 Implementations in different languages are listed and compared in [Benchmark](#benchmark).
 
-The CI workflow builds universal binary for macOS and x86_64 binaries for Windows & Linux, the files are available as artifacts.
+The CI workflow builds universal binary for macOS, x86_64 and aarch64 binaries for Linux and x86_64 binary for Windows, the files are available as artifacts.
 
 ## Build from Source
 
@@ -89,21 +89,26 @@ Average exploration time consumed of 100 executions on MacBook Air (M2).
 |        [C++][cpp-repo] | ![][cpp-loc]    | `Current`                            | 0.583 s
 | [Node.js][nodejs-repo] | ![][nodejs-loc] | [`7ad90e9`][nodejs-benchmark-commit] | 1.295 s
 |  [Python][python-repo] | ![][python-loc] | [`841b9f0`][python-benchmark-commit] | 2.813 s
+|      [Rust][rust-repo] | ![][rust-loc]   | [`cb21807`][rust-benchmark-commit]   | 0.371 s
 |    [Swift][swift-repo] | ![][swift-loc]  | [`2c73a58`][swift-benchmark-commit]  | 0.722 s
 
 The results of other implementations may be outdated, please check their repositories for latest results.
 
 [cpp-repo]: https://github.com/lucka-me/ingress-drone-explorer-cpp
-[cpp-loc]: https://img.shields.io/tokei/lines/github/lucka-me/ingress-drone-explorer-cpp
+[cpp-loc]: https://aschey.tech/tokei/github/lucka-me/ingress-drone-explorer-cpp
 
 [nodejs-repo]: https://github.com/lucka-me/ingress-drone-explorer-nodejs
-[nodejs-loc]: https://img.shields.io/tokei/lines/github/lucka-me/ingress-drone-explorer-nodejs
+[nodejs-loc]: https://aschey.tech/tokei/github/lucka-me/ingress-drone-explorer-nodejs
 [nodejs-benchmark-commit]: https://github.com/lucka-me/ingress-drone-explorer-nodejs/commit/7ad90e9
 
 [python-repo]: https://github.com/lucka-me/ingress-drone-explorer-python
-[python-loc]: https://img.shields.io/tokei/lines/github/lucka-me/ingress-drone-explorer-python
+[python-loc]: https://aschey.tech/tokei/github/lucka-me/ingress-drone-explorer-python
 [python-benchmark-commit]: https://github.com/lucka-me/ingress-drone-explorer-python/commit/841b9f0
 
+[rust-repo]: https://github.com/lucka-me/ingress-drone-explorer-rust
+[rust-loc]: https://aschey.tech/tokei/github/lucka-me/ingress-drone-explorer-rust
+[rust-benchmark-commit]: https://github.com/lucka-me/ingress-drone-explorer-rust/commit/cb21807
+
 [swift-repo]: https://github.com/lucka-me/ingress-drone-explorer-swift
-[swift-loc]: https://img.shields.io/tokei/lines/github/lucka-me/ingress-drone-explorer-swift
+[swift-loc]: https://aschey.tech/tokei/github/lucka-me/ingress-drone-explorer-swift
 [swift-benchmark-commit]: https://github.com/lucka-me/ingress-drone-explorer-swift/commit/2c73a58

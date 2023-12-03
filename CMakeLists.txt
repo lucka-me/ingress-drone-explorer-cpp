@@ -18,7 +18,6 @@ find_package(Boost REQUIRED
 )
 
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 
 include_directories(
     ${Boost_INCLUDE_DIR}
@@ -29,6 +28,11 @@ file(GLOB_RECURSE CXX_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp)
 file(GLOB_RECURSE CXX_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 
 add_executable(${PROJECT_NAME} ${CXX_HEADERS} ${CXX_SOURCE})
+
+set_target_properties(${PROJECT_NAME}
+    PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin
+)
 
 target_link_libraries(${PROJECT_NAME}
     Boost::json

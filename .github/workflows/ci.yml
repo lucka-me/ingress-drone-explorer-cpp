@@ -115,7 +115,7 @@ jobs:
       - name: Setup toolchain
         if: matrix.native != true
         run: |
-          apt-get install -y g++-${{ matrix.arch }}-linux-gnu binutils-${{ matrix.arch }}-linux-gnu
+          sudo apt-get install -y g++-${{ matrix.arch }}-linux-gnu binutils-${{ matrix.arch }}-linux-gnu
           echo "CC=${{ matrix.arch }}-linux-gnu-gcc" >> $GITHUB_ENV
           echo "CXX=${{ matrix.arch }}-linux-gnu-g++" >> $GITHUB_ENV
 

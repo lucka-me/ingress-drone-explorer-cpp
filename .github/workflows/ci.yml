@@ -21,6 +21,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
       - name: Setup Cache for Boost
         id: cache-boost
         uses: actions/cache@v3
@@ -36,6 +37,7 @@ jobs:
           cd ${{ env.BOOST_SOURCE }}/boost_1_79_0
           ./bootstrap.sh --prefix=${{ env.BOOST_ROOT }} --with-libraries=json,program_options
           ./b2 install link=static cxxstd=20 cxxflags="-arch x86_64 -arch arm64"
+
       - name: Configure CMake
         run: >
           cmake -B build --install-prefix ${{ github.workspace }}/output
@@ -45,6 +47,7 @@ jobs:
         run: cmake --build build --config ${{ env.BUILD_TYPE }} -j `sysctl -n hw.ncpu`
       - name: Install
         run: cmake --install build
+
       - name: Upload Binary
         uses: actions/upload-artifact@v3
         with:
@@ -60,6 +63,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
       - name: Setup Cache for Boost
         uses: actions/cache@v3
         id: cache-boost
@@ -78,6 +82,7 @@ jobs:
           --with-json --with-program_options `
           link=static runtime-link=static address-model=64 `
           cxxstd=20 toolset=msvc
+
       - name: Configure CMake
         run: >
           cmake -B build --install-prefix ${{ github.workspace }}\output
@@ -87,6 +92,7 @@ jobs:
         run: cmake --build build --config ${{ env.BUILD_TYPE }}
       - name: Install
         run: cmake --install build
+
       - name: Upload Binary
         uses: actions/upload-artifact@v3
         with:
@@ -94,23 +100,33 @@ jobs:
           path: output\bin\${{ env.BINARY_NAME }}.exe
 
   build-linux:
-    name: Build for Linux
+    name: Build for Linux ${{ matrix.arch }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - arch: x86_64
+            native: true
+          - arch: aarch64
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Setup toolchain
+        if: matrix.native != true
+        run: |
+          sudo apt-get install -y g++-${{ matrix.arch }}-linux-gnu binutils-${{ matrix.arch }}-linux-gnu
+          echo "CC=${{ matrix.arch }}-linux-gnu-gcc" >> $GITHUB_ENV
+          echo "CXX=${{ matrix.arch }}-linux-gnu-g++" >> $GITHUB_ENV
+          echo "using gcc : ${{ matrix.arch }} : ${{ matrix.arch }}-linux-gnu-g++ ;" >> $HOME/user-config.jam
+          echo "BOOST_B2_FLAGS=toolset=gcc-${{ matrix.arch }}" >> $GITHUB_ENV
+
       - name: Setup Cache for Boost
         uses: actions/cache@v3
         id: cache-boost
         with:
-          key: ${{ runner.os }}-boost-${{ env.BOOST_VERSION }}
+          key: ${{ runner.os }}-boost-${{ env.BOOST_VERSION }}-${{ matrix.arch }}
           path: ${{ env.BOOST_ROOT }}
-      - name: Setup Compiler
-        run: |
-          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 20
-          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 20
-          sudo update-alternatives --set gcc /usr/bin/gcc-10
-          sudo update-alternatives --set g++ /usr/bin/g++-10
       - name: Build Boost
         if: steps.cache-boost.outputs.cache-hit != 'true'
         run: |
@@ -119,7 +135,8 @@ jobs:
           7z x -y ${{ env.BOOST_SOURCE }}/source.7z -o${{ env.BOOST_SOURCE }}
           cd ${{ env.BOOST_SOURCE }}/boost_1_79_0
           ./bootstrap.sh --prefix=${{ env.BOOST_ROOT }} --with-libraries=json,program_options
-          ./b2 install link=static cxxstd=20
+          ./b2 install link=static cxxstd=20 $BOOST_B2_FLAGS
+
       - name: Configure CMake
         run: >
           cmake -B build --install-prefix ${{ github.workspace }}/output
@@ -129,8 +146,9 @@ jobs:
         run: cmake --build build --config ${{ env.BUILD_TYPE }} -j `nproc`
       - name: Install
         run: cmake --install build
+
       - name: Upload Binary
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.BINARY_NAME }}-${{ runner.os }}-x86_64
+          name: ${{ env.BINARY_NAME }}-${{ runner.os }}-${{ matrix.arch }}
           path: output/bin/${{ env.BINARY_NAME }}

@@ -18,7 +18,7 @@ coordinate_t tag_invoke(const boost::json::value_to_tag<coordinate_t>&, const bo
     coordinate_t tag;
     extract(object, "lng", tag._lng);
     extract(object, "lat", tag._lat);
-    return std::move(tag);
+    return tag;
 }
 
 portal_t tag_invoke(const boost::json::value_to_tag<portal_t>&, const boost::json::value& value) {
@@ -29,7 +29,7 @@ portal_t tag_invoke(const boost::json::value_to_tag<portal_t>&, const boost::jso
         extract(object, "title", tag._title);
     }
     extract(object, "lngLat", tag._coordinate);
-    return std::move(tag);
+    return tag;
 }
 
 void tag_invoke(const boost::json::value_from_tag&, boost::json::value& value, const drawn_item_t& tag) {

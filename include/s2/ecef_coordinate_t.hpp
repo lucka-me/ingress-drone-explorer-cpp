@@ -38,13 +38,12 @@ struct ecef_coordinate_t {
     }
 
     inline coordinate_t coordinate() const {
-        return std::move(
-            coordinate_t(
-                std::atan2(_y, _x) / std::numbers::pi * 180.0,
-                std::atan2(_z, std::sqrt(_x * _x + _y * _y)) / std::numbers::pi * 180.0
-            )
+        return coordinate_t(
+            std::atan2(_y, _x) / std::numbers::pi * 180.0,
+            std::atan2(_z, std::hypot(_x, _y)) / std::numbers::pi * 180.0
         );
     }
+
     inline void face_s_t(uint8_t& face, double& s, double& t) const {
         const auto abs_x = std::abs(_x);
         const auto abs_y = std::abs(_y);

@@ -82,14 +82,12 @@ void explorer_t::save_drawn_items_to(const std::string& filename) const {
     std::transform(
         _cells.begin(), _cells.end(),
         std::back_inserter(items),
-        [&](const auto& entry) {
+        [&](const auto& entry) -> drawn_item_t {
             const auto shape = entry.first.shape();
-            return std::move(
-                drawn_item_t(
-                    _reachable_cells.contains(entry.first) ? "#783cbd" : "#404040",
-                    std::move(std::vector<coordinate_t>(shape.begin(), shape.end()))
-                )
-            );
+            return {
+                _reachable_cells.contains(entry.first) ? "#783cbd" : "#404040",
+                { shape.begin(), shape.end() }
+            };
         }
     );
     const auto value = boost::json::value_from(items);

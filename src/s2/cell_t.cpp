@@ -36,19 +36,20 @@ std::set<cell_t> cell_t::neighbored_cells_covering_cap_of(const coordinate_t& ce
     std::set<cell_t> outside;
     std::set<cell_t> queue { *this };
     for (auto it = queue.begin(); it != queue.end(); it = queue.begin()) {
-        const auto cell = *it;
-        queue.erase(it);
+        const auto& cell = *it;
         if (result.contains(cell) || outside.contains(cell)) {
+            queue.erase(it);
             continue;
         }
         if (cell.intersects_with_cap_of(center, radius)) {
             queue.merge(cell.neighbors());
-            result.insert(std::move(cell));
+            result.emplace(cell);
         } else {
-            outside.insert(std::move(cell));
+            outside.emplace(cell);
         }
+        queue.erase(it);
     }
-    return std::move(result);
+    return result;
 }
 
 std::set<cell_t> cell_t::neighbored_cells_in(const int32_t rounds) const {
@@ -64,7 +65,7 @@ std::set<cell_t> cell_t::neighbored_cells_in(const int32_t rounds) const {
             result.insert(cell_t(_face, _i + round - step, _j - round - 1   , _level)); // Bottom, leftward
         }
     }
-    return std::move(result);
+    return result;
 }
 
 std::array<coordinate_t, 4> cell_t::shape() const {
@@ -93,14 +94,12 @@ inline cell_t::cell_t(const uint8_t face, const int32_t i, const int32_t j, uint
 
 inline coordinate_t cell_t::coordinate(const double d_i, const double d_j) const {
     const double max = 1 << _level;
-    return std::move(
-        ecef_coordinate_t(
-            _face,
-            (d_i + _i) / max,
-            (d_j + _j) / max
-        )
-        .coordinate()
-    );
+    return ecef_coordinate_t(
+        _face,
+        (d_i + _i) / max,
+        (d_j + _j) / max
+    )
+    .coordinate();
 }
 
 inline std::set<cell_t> cell_t::neighbors() const {
